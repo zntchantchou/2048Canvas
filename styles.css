@@ -1,0 +1,21 @@
+body {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#content {
+    height: 500px;
+    width: 500px;
+    border: 1px dashed gray;
+}
+
+canvas {
+    background-color: #bbada072;
+    /* background-color: #15a074; */
+}
