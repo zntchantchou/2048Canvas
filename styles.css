@@ -5,8 +5,14 @@ body {
     left: 0;
     right: 0;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+#move {
+    font-size: 3rem;
+    margin-bottom: 3rem;
 }
 
 #content {
@@ -16,6 +22,6 @@ body {
 }
 
 canvas {
-    background-color: #bbada072;
+    background-color: #CDC1B4;
     /* background-color: #15a074; */
 }

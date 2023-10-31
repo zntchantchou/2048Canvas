@@ -1,30 +1,35 @@
+import { DIRECTIONS } from "./enums";
 import { Coordinates } from "./interfaces";
 
 export default class Tile {
-    x: number;
-    y: number;
-    nextX: number;
-    nextY: number;
-    value: number;
-    nextValue: number;
-    delete: Boolean;
+  //  all useful ?
+  x: number;
+  y: number;
+  nextX: number;
+  nextY: number;
+  prevY: number;
+  prevX: number;
+  value: number;
+  nextValue: number;
+  delete: Boolean;
 
-    constructor(coordinates: Coordinates) {
-        this.x = coordinates.x;
-        this.y = coordinates.y;
-        this.value = Math.random() < 0.7 ? 2 : 4;
-        // this.value = 2;
-    }
-
-    moveX() {
-      console.log('MOVE X');
-      this.x = this.nextX;
-      this.value = this.nextValue ? this.nextValue : this.value;
-    }
-    moveY() {
-      console.log('MOVE Y');
-      this.y = this.nextY;
-      this.value = this.nextValue ? this.nextValue : this.value;
-    }
+  constructor(coordinates: Coordinates, value?: number) {
+    this.x = coordinates.x;
+    this.y = coordinates.y;
+    console.log("value", value);
+    this.value = !value || isNaN(value) ? (Math.random() < 0.7 ? 2 : 4) : value;
   }
-  
+
+  move(direction: DIRECTIONS) {
+    console.log("[TILE] MOVE X");
+    if ([DIRECTIONS.LEFT, DIRECTIONS.RIGHT].includes(direction)) {
+      this.prevX = this.x;
+      // this.x = this.nextX;
+    } else {
+      this.prevY = this.y;
+      // this.y = this.nextY;
+    }
+    console.log("moove", this.nextValue, this.value);
+    this.value = this.nextValue ? this.nextValue : this.value;
+  }
+}
