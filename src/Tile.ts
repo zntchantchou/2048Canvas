@@ -24,12 +24,10 @@ export default class Tile {
     console.log("[TILE] MOVE X");
     if ([DIRECTIONS.LEFT, DIRECTIONS.RIGHT].includes(direction)) {
       this.prevX = this.x;
-      // this.x = this.nextX;
     } else {
       this.prevY = this.y;
-      // this.y = this.nextY;
     }
-    console.log("moove", this.nextValue, this.value);
+    console.log("[Tile.move]", this.nextValue, this.value);
     this.value = this.nextValue ? this.nextValue : this.value;
   }
 }

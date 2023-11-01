@@ -18,10 +18,10 @@ body {
 #content {
     height: 500px;
     width: 500px;
-    border: 1px dashed gray;
+    border: 1px dashed #808080;
 }
 
 canvas {
     background-color: #CDC1B4;
-    /* background-color: #15a074; */
+    /* background-color: #bebebebe; */
 }

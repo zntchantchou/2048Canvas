@@ -34,8 +34,12 @@ export default class Game {
       tile.y == 0
         ? this.gridGap
         : this.gridGap + (this.cellSide + this.gridGap) * tile.y;
-    this.context.fillStyle = COLORS[tile.value] || "blue";
-    this.context.fillRect(x, y, this.cellSide, this.cellSide);
+    this.context.strokeStyle = COLORS[tile.value] || "blue";
+    this.context.fillStyle = COLORS[tile.value];
+    this.context.beginPath();
+    this.context.roundRect(x, y, this.cellSide, this.cellSide, [3]);
+    this.context.fill();
+    this.context.stroke();
     this.context.font = this.font;
     this.context.textAlign = this.textAlign;
     this.context.fillStyle = this.textFill;
@@ -51,12 +55,46 @@ export default class Game {
     console.log("draw");
     if (this.context) {
       this.clear();
+      this.drawOverlay();
     }
+    if (!this.canvas) return;
     for (let i = 0; i < this.gameState.tiles.length; i++) {
       this.drawSquare(this.gameState.tiles[i]);
     }
     if (animate) window.requestAnimationFrame(this.goToNextFrame);
   };
+
+  private drawOverlay = () => {
+    if (!this.context) return;
+    const gridTiles = new Array(this.vX).fill(null).map((elt, XindeX) => {
+      return new Array(this.vX)
+        .fill(null)
+        .map((elt, yIndex) => new Tile({ x: XindeX, y: yIndex }));
+    });
+    this.drawOverlayTiles(gridTiles.flat());
+  };
+
+  private drawOverlayTiles(tiles: Tile[]) {
+    if (!this.context || this.context == null) return;
+    tiles.forEach((tile) => {
+      const x =
+        tile.x == 0
+          ? this.gridGap
+          : this.gridGap + (this.cellSide + this.gridGap) * tile.x;
+      const y =
+        tile.y == 0
+          ? this.gridGap
+          : this.gridGap + (this.cellSide + this.gridGap) * tile.y;
+      // @ts-ignore
+      this.context.fillStyle = "#ffffff3b";
+      // @ts-ignore
+      this.context.strokeStyle = "#ffffff3b";
+      this.context?.beginPath();
+      this.context?.roundRect(x, y, this.cellSide, this.cellSide, [3]);
+      this.context?.fill();
+      this.context?.stroke();
+    });
+  }
 
   private goToNextFrame = () => {
     if (this.isAnimationDone) {
@@ -65,20 +103,25 @@ export default class Game {
     }
     if (this.context) {
       this.clear();
+      this.drawOverlay();
     }
-    // console.log("step");
+
     const updatedTiles: Tile[] = [...this.gameState.tiles];
 
     updatedTiles.forEach((tile) => {
       switch (this.lastMove) {
         case DIRECTIONS.UP:
           console.log("[game.goToNextFrame] UP");
-          if (tile.y == tile.nextY) break;
+          if (tile.y == tile.nextY) {
+            break;
+          }
           if (tile.y - this.SHIFT_SIZE < tile.nextY) {
             tile.y = tile.nextY;
+            console.log("UP IN", tile.y);
             break;
           }
           tile.y = tile.y - this.SHIFT_SIZE;
+          console.log("UP OUT", tile.y);
           break;
         case DIRECTIONS.DOWN:
           console.log("[game.goToNextFrame] DOWN");
@@ -128,10 +171,8 @@ export default class Game {
       this.currentAnimationNumber = window.requestAnimationFrame(
         this.goToNextFrame
       );
-      console.log("moving tiles", movingTiles);
     } else {
       this.isAnimationDone = true;
-      console.log("currentAnimation", this.currentAnimationNumber);
       window.cancelAnimationFrame(this.currentAnimationNumber);
       this.gameState.deleteMergedTiles();
       this.gameState.spawnTile();
@@ -147,7 +188,8 @@ export default class Game {
   };
 
   start() {
-    this.handleEvents();
+    // setTimeout(() => {}, 500);
+    this.handleMoveEvent();
     this.draw();
   }
 
@@ -158,7 +200,7 @@ export default class Game {
     }
   }
 
-  handleEvents() {
+  handleMoveEvent() {
     document.addEventListener("keydown", (event) => {
       switch (event.code) {
         case "ArrowUp":
@@ -178,8 +220,19 @@ export default class Game {
           this.setMove(DIRECTIONS.RIGHT);
           break;
       }
-      this.isAnimationDone = false;
-      this.draw(true);
+      if (
+        ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.code)
+      ) {
+        this.isAnimationDone = false;
+        this.draw(true);
+      }
     });
+  }
+
+  handleReload() {
+    window.onbeforeunload = (e) => {
+      this.isAnimationDone = true;
+      console.log("RELOADDDDDDDD");
+    };
   }
 }
