@@ -12,7 +12,7 @@ export default class GameState {
   constructor() {
     const startTiles: Tile[] = [
       new Tile({ x: 0, y: 0 }, 2),
-      new Tile({ x: 0, y: 2 }, 2),
+      new Tile({ x: 0, y: 3 }, 2),
     ];
     startTiles.forEach((t) => this.addTile(t));
   }
@@ -57,10 +57,8 @@ export default class GameState {
         isVerticalMove ? t.x == c : t.y == c
       );
       colunmsOrRows.forEach((tile, index, arr) => {
-        // console.log("Tile", tile);
         let nextTile = arr[index + 1];
         let prevTile = arr[index - 1];
-        // console.log("tile", tile);
         if (index == 0) {
           // first tile in a row / column goes to 0 if going left or up
           // first tile in a row / column goes to the last position if going down or right
@@ -74,41 +72,37 @@ export default class GameState {
         }
         if (index > 0) {
           if (!prevTile.delete) {
-            // console.log("!prevtile.delete", tile);
-            const nextValue = [DIRECTIONS.DOWN, DIRECTIONS.RIGHT].includes(
+            const updatedCoords = [DIRECTIONS.DOWN, DIRECTIONS.RIGHT].includes(
               direction
             )
               ? prevTile[nextCoord] - 1
               : prevTile[nextCoord] + 1;
-            tile[nextCoord] = nextValue;
-            // console.log("!prevtile.delete after", tile);
-          } else {
-            // // deleted tile should go to the tile to which it is merged
-            // console.log("ELSE !!!", tile, prevTile);
-            // console.log("tile", tile.prevX == 2);
-            tile[nextCoord] = prevTile[nextCoord];
-          }
+            tile[nextCoord] = updatedCoords;
 
-          if (!prevTile.delete && prevTile.value == tile.value) {
-            // console.log("last tile delete", tile, prevTile);
-            tile.delete = true;
-            // deleted tile will disappear in the tile it is merged into
-            // tile[nextCoord] = prevTile[nextCoord];
-            prevTile.nextValue = prevTile.value * 2;
+            if (prevTile.value == tile.value) {
+              tile.delete = true;
+              prevTile.nextValue = prevTile.value * 2;
+            }
+          }
+          if (tile.delete) {
+            console.log("TILE DELETE");
+            console.log("TILE ", tile);
+            console.log("TILE PREVTILE ", prevTile);
+            tile[nextCoord] = prevTile[nextCoord];
           }
         }
         computedTiles = [...computedTiles, tile];
       });
     }
-    console.log("computed tiles", computedTiles);
+    // console.log("computed tiles", computedTiles);
     return computedTiles;
   }
 
   move(direction: DIRECTIONS) {
-    console.log("[move before]", [...this.tiles][0], this.tiles[0]);
+    // console.log("[move before]", [...this.tiles][0], this.tiles[0]);
     this.tiles = this.getUpdatedTiles(direction);
 
-    console.log("[move after]", ...this.tiles, this.tiles);
+    // console.log("[move after]", ...this.tiles, this.tiles);
     [...this.tiles].forEach((t) => t.move(direction));
   }
 

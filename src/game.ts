@@ -16,7 +16,7 @@ export default class Game {
   gridGap = 20;
   vX = 4;
   vY = 4;
-  SHIFT_SIZE = 0.2;
+  SHIFT_SIZE = 0.05;
   cellSide = (this.canvas.height - 100) / 4;
   gameState: GameState = new GameState();
   lastMove: DIRECTIONS = DIRECTIONS.UP;
