@@ -111,20 +111,20 @@ export default class Game {
     updatedTiles.forEach((tile) => {
       switch (this.lastMove) {
         case DIRECTIONS.UP:
-          console.log("[game.goToNextFrame] UP");
+          // console.log("[game.goToNextFrame] UP");
           if (tile.y == tile.nextY) {
             break;
           }
           if (tile.y - this.SHIFT_SIZE < tile.nextY) {
             tile.y = tile.nextY;
-            console.log("UP IN", tile.y);
+            // console.log("UP IN", tile.y);
             break;
           }
           tile.y = tile.y - this.SHIFT_SIZE;
-          console.log("UP OUT", tile.y);
+          // console.log("UP OUT", tile.y);
           break;
         case DIRECTIONS.DOWN:
-          console.log("[game.goToNextFrame] DOWN");
+          // console.log("[game.goToNextFrame] DOWN");
           if (tile.y == tile.nextY) break;
           if (tile.y + this.SHIFT_SIZE > tile.nextY) {
             tile.y = tile.nextY;
@@ -134,7 +134,7 @@ export default class Game {
           tile.y = tile.y + this.SHIFT_SIZE >= 3 ? 3 : tile.y + this.SHIFT_SIZE;
           break;
         case DIRECTIONS.LEFT:
-          console.log("[game.goToNextFrame] LEFT");
+          // console.log("[game.goToNextFrame] LEFT");
           if (tile.x == tile.nextX) break;
           if (tile.x - this.SHIFT_SIZE < tile.nextX) {
             tile.x = tile.nextX;
@@ -143,7 +143,7 @@ export default class Game {
           tile.x = tile.x - this.SHIFT_SIZE;
           break;
         case DIRECTIONS.RIGHT:
-          console.log("[game.goToNextFrame] RIGHT");
+          // console.log("[game.goToNextFrame] RIGHT");
           if (tile.x == tile.nextX) break;
           if (tile.x + this.SHIFT_SIZE > tile.nextX) {
             tile.x = tile.nextX;
@@ -152,7 +152,7 @@ export default class Game {
           tile.x = tile.x + this.SHIFT_SIZE;
           break;
         default:
-          console.log("[game.goToNextFrame] DEFAULT");
+          // console.log("[game.goToNextFrame] DEFAULT");
           break;
       }
     });

@@ -11,8 +11,9 @@ export default class GameState {
 
   constructor() {
     const startTiles: Tile[] = [
-      new Tile({ x: 0, y: 0 }, 2),
-      new Tile({ x: 0, y: 3 }, 2),
+      new Tile({ x: 1, y: 0 }, 2),
+      new Tile({ x: 2, y: 0 }, 2),
+      new Tile({ x: 1, y: 1 }, 2),
     ];
     startTiles.forEach((t) => this.addTile(t));
   }
@@ -85,16 +86,29 @@ export default class GameState {
             }
           }
           if (tile.delete) {
+            console.log("---------------------------------");
             console.log("TILE DELETE");
             console.log("TILE ", tile);
             console.log("TILE PREVTILE ", prevTile);
             tile[nextCoord] = prevTile[nextCoord];
+            console.log("tile after", tile);
+          }
+          if (prevTile.delete) {
+            console.log("PREV TILE DELETED FOR TILE", tile, prevTile);
+            if ([DIRECTIONS.DOWN, DIRECTIONS.RIGHT].includes(direction)) {
+              console.log("DOWN OR RIGHT ", tile, prevTile);
+              tile[nextCoord] = prevTile[nextCoord] - 1;
+            }
+            if ([DIRECTIONS.LEFT, DIRECTIONS.UP].includes(direction)) {
+              console.log("LEFT OR UP ", tile, prevTile);
+              tile[nextCoord] = prevTile[nextCoord] + 1;
+            }
           }
         }
         computedTiles = [...computedTiles, tile];
       });
     }
-    // console.log("computed tiles", computedTiles);
+    console.log("computed tiles", computedTiles);
     return computedTiles;
   }
 
