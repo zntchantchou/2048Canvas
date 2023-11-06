@@ -3,6 +3,8 @@ import { DIRECTIONS } from "./enums";
 import { Coordinates } from "./interfaces";
 
 export default class GameState {
+  score: number = 0;
+  bestScore: number = 0;
   tiles: Tile[] = [];
   nextTiles: Tile[] = [];
   ROW_SIZE = 3;
@@ -10,12 +12,19 @@ export default class GameState {
   HORIZONTAL_DIRECTIONS = [DIRECTIONS.LEFT, DIRECTIONS.RIGHT];
 
   constructor() {
-    const startTiles: Tile[] = [
-      new Tile({ x: 1, y: 0 }, 2),
-      new Tile({ x: 2, y: 0 }, 2),
-      new Tile({ x: 1, y: 1 }, 2),
-    ];
+    this.reset();
+  }
+
+  reset() {
+    this.tiles = [];
+    const startTiles: Tile[] = [this.getNewTile(), this.getNewTile()];
     startTiles.forEach((t) => this.addTile(t));
+    window.localStorage.removeItem("currentScore");
+    const bestScore = localStorage.getItem("bestScore");
+    this.score = 0;
+    if (bestScore) {
+      this.bestScore = Number(bestScore);
+    }
   }
 
   randomInt() {
@@ -24,6 +33,10 @@ export default class GameState {
 
   addTile(tile: Tile) {
     this.tiles = [tile, ...this.tiles];
+  }
+
+  getNewTile() {
+    return new Tile(this.randomCoords(), Math.random() > 0.6 ? 4 : 2);
   }
 
   randomCoords(): Coordinates {
@@ -82,25 +95,17 @@ export default class GameState {
 
             if (prevTile.value == tile.value) {
               tile.delete = true;
-              prevTile.nextValue = prevTile.value * 2;
             }
           }
           if (tile.delete) {
-            console.log("---------------------------------");
-            console.log("TILE DELETE");
-            console.log("TILE ", tile);
-            console.log("TILE PREVTILE ", prevTile);
+            this.addToScore(tile.value * 2);
             tile[nextCoord] = prevTile[nextCoord];
-            console.log("tile after", tile);
           }
           if (prevTile.delete) {
-            console.log("PREV TILE DELETED FOR TILE", tile, prevTile);
             if ([DIRECTIONS.DOWN, DIRECTIONS.RIGHT].includes(direction)) {
-              console.log("DOWN OR RIGHT ", tile, prevTile);
               tile[nextCoord] = prevTile[nextCoord] - 1;
             }
             if ([DIRECTIONS.LEFT, DIRECTIONS.UP].includes(direction)) {
-              console.log("LEFT OR UP ", tile, prevTile);
               tile[nextCoord] = prevTile[nextCoord] + 1;
             }
           }
@@ -108,16 +113,15 @@ export default class GameState {
         computedTiles = [...computedTiles, tile];
       });
     }
-    console.log("computed tiles", computedTiles);
     return computedTiles;
   }
 
   move(direction: DIRECTIONS) {
-    // console.log("[move before]", [...this.tiles][0], this.tiles[0]);
     this.tiles = this.getUpdatedTiles(direction);
+  }
 
-    // console.log("[move after]", ...this.tiles, this.tiles);
-    [...this.tiles].forEach((t) => t.move(direction));
+  updateValues() {
+    this.tiles.forEach((t) => t.updateValue());
   }
 
   spawnTile() {
@@ -125,6 +129,17 @@ export default class GameState {
       this.addTile(new Tile(this.randomCoords()));
     }
   }
+
+  addToScore(number) {
+    const updatedScore = this.score + number;
+    this.score = updatedScore;
+    localStorage.setItem("currentScore", updatedScore);
+    if (this.score > this.bestScore) {
+      this.bestScore = this.score;
+      localStorage.setItem("bestScore", updatedScore);
+    }
+  }
+
   // delete tiles that must disappear
   deleteMergedTiles() {
     this.tiles = this.tiles.filter((t) => !t.delete);

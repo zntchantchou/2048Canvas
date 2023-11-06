@@ -1,13 +1,19 @@
 import { DIRECTIONS } from "./enums";
-import GameState from "./state";
+import GameState from "./State";
 import COLORS from "./colors";
 import Tile from "./Tile";
+
 // CONSTANTS
 export default class Game {
+  // DOM selection ----------
   canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
   moveElt = document.getElementById("move");
   context = this.canvas.getContext("2d");
-  font = "24px Arial";
+  scoreElt = document.getElementById("currentScore") as HTMLSpanElement;
+  bestScoreElt = document.getElementById("currentBestScore") as HTMLSpanElement;
+  restartElt = document.getElementById("restart") as HTMLDivElement;
+  // ------------------------
+  font = "3em Arial";
   textAlign: CanvasTextAlign = "center";
   textFill = "#776E65";
   squareX = 0;
@@ -16,7 +22,7 @@ export default class Game {
   gridGap = 20;
   vX = 4;
   vY = 4;
-  SHIFT_SIZE = 0.05;
+  SHIFT_SIZE = 0.2;
   cellSide = (this.canvas.height - 100) / 4;
   gameState: GameState = new GameState();
   lastMove: DIRECTIONS = DIRECTIONS.UP;
@@ -52,7 +58,6 @@ export default class Game {
   };
 
   private draw = (animate?: boolean) => {
-    console.log("draw");
     if (this.context) {
       this.clear();
       this.drawOverlay();
@@ -66,10 +71,8 @@ export default class Game {
 
   private drawOverlay = () => {
     if (!this.context) return;
-    const gridTiles = new Array(this.vX).fill(null).map((elt, XindeX) => {
-      return new Array(this.vX)
-        .fill(null)
-        .map((elt, yIndex) => new Tile({ x: XindeX, y: yIndex }));
+    const gridTiles = new Array(this.vX).fill(null).map((elt, x) => {
+      return new Array(this.vX).fill(null).map((elt, y) => new Tile({ x, y }));
     });
     this.drawOverlayTiles(gridTiles.flat());
   };
@@ -98,7 +101,6 @@ export default class Game {
 
   private goToNextFrame = () => {
     if (this.isAnimationDone) {
-      console.log("Animation is done");
       return;
     }
     if (this.context) {
@@ -111,20 +113,16 @@ export default class Game {
     updatedTiles.forEach((tile) => {
       switch (this.lastMove) {
         case DIRECTIONS.UP:
-          // console.log("[game.goToNextFrame] UP");
           if (tile.y == tile.nextY) {
             break;
           }
           if (tile.y - this.SHIFT_SIZE < tile.nextY) {
             tile.y = tile.nextY;
-            // console.log("UP IN", tile.y);
             break;
           }
           tile.y = tile.y - this.SHIFT_SIZE;
-          // console.log("UP OUT", tile.y);
           break;
         case DIRECTIONS.DOWN:
-          // console.log("[game.goToNextFrame] DOWN");
           if (tile.y == tile.nextY) break;
           if (tile.y + this.SHIFT_SIZE > tile.nextY) {
             tile.y = tile.nextY;
@@ -134,7 +132,6 @@ export default class Game {
           tile.y = tile.y + this.SHIFT_SIZE >= 3 ? 3 : tile.y + this.SHIFT_SIZE;
           break;
         case DIRECTIONS.LEFT:
-          // console.log("[game.goToNextFrame] LEFT");
           if (tile.x == tile.nextX) break;
           if (tile.x - this.SHIFT_SIZE < tile.nextX) {
             tile.x = tile.nextX;
@@ -143,7 +140,6 @@ export default class Game {
           tile.x = tile.x - this.SHIFT_SIZE;
           break;
         case DIRECTIONS.RIGHT:
-          // console.log("[game.goToNextFrame] RIGHT");
           if (tile.x == tile.nextX) break;
           if (tile.x + this.SHIFT_SIZE > tile.nextX) {
             tile.x = tile.nextX;
@@ -152,7 +148,6 @@ export default class Game {
           tile.x = tile.x + this.SHIFT_SIZE;
           break;
         default:
-          // console.log("[game.goToNextFrame] DEFAULT");
           break;
       }
     });
@@ -176,8 +171,9 @@ export default class Game {
       window.cancelAnimationFrame(this.currentAnimationNumber);
       this.gameState.deleteMergedTiles();
       this.gameState.spawnTile();
+      this.gameState.updateValues();
+      this.setScore();
       this.draw();
-      console.log("done");
     }
   };
 
@@ -188,8 +184,8 @@ export default class Game {
   };
 
   start() {
-    // setTimeout(() => {}, 500);
     this.handleMoveEvent();
+    this.handleRestart();
     this.draw();
   }
 
@@ -229,10 +225,22 @@ export default class Game {
     });
   }
 
+  // avoid tiles when the page is reloaded
   handleReload() {
-    window.onbeforeunload = (e) => {
+    window.onbeforeunload = (_) => {
       this.isAnimationDone = true;
-      console.log("RELOADDDDDDDD");
     };
+  }
+
+  handleRestart() {
+    this.restartElt.addEventListener("click", () => {
+      this.gameState.reset();
+      this.draw();
+    });
+  }
+
+  setScore() {
+    this.scoreElt.textContent = this.gameState.score.toString();
+    this.bestScoreElt.textContent = this.gameState.bestScore.toString();
   }
 }

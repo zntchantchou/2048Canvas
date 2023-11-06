@@ -1,0 +1,30 @@
+✘ sync animation, alls tiles must start and finish moving AT THE SAME TIME even if they travel different distances @cancelled(23-11-01 11:40)
+
+✔ 8 - 4 - 4 - 2 => 8 - 4 - 2 @done(23-11-01 11:40)
+✔ too much recursion @done(23-10-13 13:14)
+✔ no animation when moving one square ? @done(23-11-01 11:40)
+✔ add and implement colors @started(23-11-01 11:46) @done(23-11-01 11:48) @lasted(2m15s)
+✔ Add sub-grid layer @done(23-11-01 13:44)
+✔ add score visuals @done(23-11-06 12:31)
+
+☐ clean css
+
+☐ implement scoring system
+  ☐ score should not move  
+  ✔ set existing best score if exists @done(23-11-06 13:54)
+  ✔ best score must be saved to localstorage @done(23-11-06 13:54)
+  ✔ save score to localStorage @done(23-11-06 13:54)
+  ✔ reset score at game start @done(23-11-06 13:55)
+  
+☐ Save game state at each move 
+
+☐ Win / loss
+
+  ☐ LOGIC
+    ☐ check if 16 (full grid)
+    ☐ YES: Sort right and then check for same value in contiguous tiles (same x if sorted horizontally, same y if vertically)
+
+  ☐ VISUAL 
+
+☐ refacto
+  ☐ createOverlay 

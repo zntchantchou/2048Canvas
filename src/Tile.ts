@@ -19,12 +19,8 @@ export default class Tile {
     this.value = !value || isNaN(value) ? (Math.random() < 0.7 ? 2 : 4) : value;
   }
 
-  move(direction: DIRECTIONS) {
-    if ([DIRECTIONS.LEFT, DIRECTIONS.RIGHT].includes(direction)) {
-      this.prevX = this.x;
-    } else {
-      this.prevY = this.y;
-    }
+  updateValue() {
+    console.log("updateValue");
     this.value = this.nextValue ? this.nextValue : this.value;
   }
 }
