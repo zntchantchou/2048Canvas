@@ -18,12 +18,11 @@ body {
 #content {
     /* height: 500px; */
     width: 500px;
-    border: 1px dashed #808080;
     font-family: Arial;
 }
 
 #controls {
-    padding: 10px;
+    padding: 10px 0px;
     display: flex;
     color: #fff;
     font-family: Arial;
@@ -31,27 +30,38 @@ body {
     justify-content: space-between;
 }
 
-#score, #bestScore, #restart {
+#score, #bestScore, .restart, #resume {
     border-radius: 5px;
     display: flex;
 }
 
 #score, #bestScore {
+    font-size: 1.1em;
     background-color:#BBADA0;
-    padding: 5px;
+    padding: 5px 15px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-#restart {
+.restart  {
+    background-color: rgb(2, 160, 23);
+}
+
+.restart, #resume {
     display: flex;
     cursor: pointer;
     justify-content: center;
     align-items: center;
-    background-color: rgb(2, 160, 23);
     height: 100%;
     padding: 0.8em;
+}
+
+#resume {
+    color: #fff;
+    font-size: medium;
+    font-weight: 800;
+    margin-left: 1em;
 }
 
 #title {
@@ -61,4 +71,45 @@ body {
 
 canvas {
     background-color: #CDC1B4;
+}
+
+#overlay {
+  height: 500px;
+  width: 500px;
+  z-index: 2;
+  position: absolute;
+  background-color: rgba(255, 208, 0, 0.322);
+  display: none;
+  /* display:flex; */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
+#overlay #resume {
+    height: 100%; 
+    background-color: rgba(0, 0, 255, 0.308);
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#overlay .text {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+#overlay .controls {
+    display: flex;
+    height: 3em;
+    justify-content: center;
+    align-items: center;
+}
+
+#overlay .controls  img {
+    height: 40px;
 }

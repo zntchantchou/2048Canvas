@@ -9,16 +9,16 @@
 
 ☐ clean css
 
-☐ implement scoring system
-  ☐ score should not move  
+✔ implement scoring system @done(23-11-06 14:43)
+  ✔ score should not move @done(23-11-06 14:42)
   ✔ set existing best score if exists @done(23-11-06 13:54)
   ✔ best score must be saved to localstorage @done(23-11-06 13:54)
   ✔ save score to localStorage @done(23-11-06 13:54)
   ✔ reset score at game start @done(23-11-06 13:55)
   
-☐ Save game state at each move 
-
-☐ Win / loss
+  ☐ Win / loss
+  
+  ☐ Save game state at each move 
 
   ☐ LOGIC
     ☐ check if 16 (full grid)

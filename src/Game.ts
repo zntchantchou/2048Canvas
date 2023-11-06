@@ -11,7 +11,9 @@ export default class Game {
   context = this.canvas.getContext("2d");
   scoreElt = document.getElementById("currentScore") as HTMLSpanElement;
   bestScoreElt = document.getElementById("currentBestScore") as HTMLSpanElement;
-  restartElt = document.getElementById("restart") as HTMLDivElement;
+  restartElt = document.getElementsByClassName("restart");
+  overlayElt = document.getElementById("overlay") as HTMLDivElement;
+  // resumeElt = document.getElementById("resume") as HTMLDivElement;
   // ------------------------
   font = "3em Arial";
   textAlign: CanvasTextAlign = "center";
@@ -71,8 +73,8 @@ export default class Game {
 
   private drawOverlay = () => {
     if (!this.context) return;
-    const gridTiles = new Array(this.vX).fill(null).map((elt, x) => {
-      return new Array(this.vX).fill(null).map((elt, y) => new Tile({ x, y }));
+    const gridTiles = new Array(this.vX).fill(null).map((_, x) => {
+      return new Array(this.vX).fill(null).map((_, y) => new Tile({ x, y }));
     });
     this.drawOverlayTiles(gridTiles.flat());
   };
@@ -97,6 +99,13 @@ export default class Game {
       this.context?.fill();
       this.context?.stroke();
     });
+  }
+
+  setMove(direction: DIRECTIONS) {
+    this.lastMove = direction;
+    if (this.moveElt) {
+      this.moveElt.textContent = direction;
+    }
   }
 
   private goToNextFrame = () => {
@@ -169,11 +178,12 @@ export default class Game {
     } else {
       this.isAnimationDone = true;
       window.cancelAnimationFrame(this.currentAnimationNumber);
-      this.gameState.deleteMergedTiles();
-      this.gameState.spawnTile();
-      this.gameState.updateValues();
+      this.gameState.handleAnimationEnd();
       this.setScore();
       this.draw();
+      if (this.gameState.gameOver) {
+        this.overlayElt.style.display = "flex";
+      }
     }
   };
 
@@ -181,19 +191,27 @@ export default class Game {
     if (this.context) {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
+    this.hideOverlay();
   };
 
+  hideOverlay() {
+    this.overlayElt.style.display = "none";
+  }
+
   start() {
+    this.setScore();
+    // this.handleResume();
+    this.handleReload();
     this.handleMoveEvent();
     this.handleRestart();
     this.draw();
   }
 
-  setMove(direction: DIRECTIONS) {
-    this.lastMove = direction;
-    if (this.moveElt) {
-      this.moveElt.textContent = direction;
-    }
+  handleResume() {
+    // this.resumeElt.addEventListener("click", (e) => {
+    //   this.hideOverlay();
+    //   this.gameState.resume();
+    // });
   }
 
   handleMoveEvent() {
@@ -233,9 +251,11 @@ export default class Game {
   }
 
   handleRestart() {
-    this.restartElt.addEventListener("click", () => {
-      this.gameState.reset();
-      this.draw();
+    Array.from(this.restartElt).forEach((restartButton) => {
+      restartButton.addEventListener("click", () => {
+        this.gameState.reset();
+        this.draw();
+      });
     });
   }
 

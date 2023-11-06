@@ -3,21 +3,44 @@ import { DIRECTIONS } from "./enums";
 import { Coordinates } from "./interfaces";
 
 export default class GameState {
+  isPastWin: boolean = false;
   score: number = 0;
   bestScore: number = 0;
   tiles: Tile[] = [];
-  nextTiles: Tile[] = [];
-  ROW_SIZE = 3;
+  sortedTiles: Tile[];
+  gameOver: boolean = false;
+  ROW_SIZE: number = 3;
   VERTICAL_DIRECTIONS = [DIRECTIONS.UP, DIRECTIONS.DOWN];
   HORIZONTAL_DIRECTIONS = [DIRECTIONS.LEFT, DIRECTIONS.RIGHT];
 
   constructor() {
+    console.log("reset");
     this.reset();
   }
 
   reset() {
     this.tiles = [];
-    const startTiles: Tile[] = [this.getNewTile(), this.getNewTile()];
+    const startTiles: Tile[] = [
+      this.getNewTile(),
+      this.getNewTile(),
+      // new Tile({ x: 0, y: 0 }, 2),
+      // new Tile({ x: 1, y: 0 }, 4),
+      // new Tile({ x: 2, y: 0 }, 2),
+      // new Tile({ x: 3, y: 0 }, 4),
+      // new Tile({ x: 0, y: 1 }, 4),
+      // new Tile({ x: 1, y: 1 }, 2),
+      // new Tile({ x: 2, y: 1 }, 4),
+      // new Tile({ x: 3, y: 1 }, 2),
+      // new Tile({ x: 0, y: 2 }, 2),
+      // new Tile({ x: 1, y: 2 }, 4),
+      // new Tile({ x: 2, y: 2 }, 2),
+      // new Tile({ x: 3, y: 2 }, 4),
+      // new Tile({ x: 0, y: 3 }, 4),
+      // new Tile({ x: 1, y: 3 }, 2),
+      // new Tile({ x: 2, y: 3 }, 4),
+      // new Tile({ x: 3, y: 3 }, 2),
+    ];
+    this.gameOver = false;
     startTiles.forEach((t) => this.addTile(t));
     window.localStorage.removeItem("currentScore");
     const bestScore = localStorage.getItem("bestScore");
@@ -60,14 +83,14 @@ export default class GameState {
   }
 
   getUpdatedTiles(direction: DIRECTIONS): Tile[] {
-    const tiles = this.getSortedTiles(direction);
+    const sortedtiles = this.getSortedTiles(direction);
     let computedTiles: Tile[] = [];
     let isVerticalMove = this.VERTICAL_DIRECTIONS.includes(direction);
     let nextCoord = isVerticalMove ? "nextY" : "nextX";
     for (let c = 0; c <= this.ROW_SIZE; c++) {
       // traverse by column if UP or DOWN
       // traverse by row if LEFT or RIGHT
-      let colunmsOrRows = tiles.filter((t) =>
+      let colunmsOrRows = sortedtiles.filter((t) =>
         isVerticalMove ? t.x == c : t.y == c
       );
       colunmsOrRows.forEach((tile, index, arr) => {
@@ -101,11 +124,12 @@ export default class GameState {
             this.addToScore(tile.value * 2);
             tile[nextCoord] = prevTile[nextCoord];
           }
+          // if the previous tile is deleted,
+          // the next tile slides into the deleted tile's position
           if (prevTile.delete) {
             if ([DIRECTIONS.DOWN, DIRECTIONS.RIGHT].includes(direction)) {
               tile[nextCoord] = prevTile[nextCoord] - 1;
-            }
-            if ([DIRECTIONS.LEFT, DIRECTIONS.UP].includes(direction)) {
+            } else {
               tile[nextCoord] = prevTile[nextCoord] + 1;
             }
           }
@@ -121,7 +145,7 @@ export default class GameState {
   }
 
   updateValues() {
-    this.tiles.forEach((t) => t.updateValue());
+    this.tiles.forEach((t) => t.update());
   }
 
   spawnTile() {
@@ -145,6 +169,11 @@ export default class GameState {
     this.tiles = this.tiles.filter((t) => !t.delete);
   }
 
+  resume() {
+    this.gameOver = false;
+    this.isPastWin = true;
+  }
+
   get sortFns(): SORT_FNS {
     return {
       xAsc: (a, b) => {
@@ -166,7 +195,7 @@ export default class GameState {
     };
   }
 
-  getSortedTiles(direction: DIRECTIONS): Tile[] {
+  getSortedTiles(direction: DIRECTIONS | null): Tile[] {
     switch (direction) {
       case DIRECTIONS.UP:
         return [...this.tiles].sort((a, b) => {
@@ -181,6 +210,7 @@ export default class GameState {
           return yDesc == 0 ? this.sortFns.xAsc(a, b) : yDesc;
         });
       case DIRECTIONS.LEFT:
+      case null:
         return [...this.tiles].sort((a, b) => {
           // sort by X ASC then by Y ASC
           const xAsc = this.sortFns.xAsc(a, b);
@@ -193,6 +223,73 @@ export default class GameState {
           return xDesc == 0 ? this.sortFns.yAsc(a, b) : xDesc;
         });
     }
+  }
+
+  handleAnimationEnd() {
+    this.deleteMergedTiles();
+    this.spawnTile();
+    this.calculateWinStatus();
+    this.updateValues();
+  }
+
+  calculateWinStatus() {
+    if (this.isPastWin && this.gameOver) {
+      console.log("this.isPastWin", this.isPastWin);
+      console.log("this.gameOver", this.gameOver);
+      this.gameOver = false;
+    }
+    let hasVerticalMove = true;
+    let hasHorizontalMove = true;
+
+    const sortedTiles = this.getSortedTiles(null);
+    // check if 16 tiles
+    if (sortedTiles.length === 16) {
+      const rows = new Array(4)
+        .fill(null)
+        .map((_, index) => sortedTiles.filter((tile) => tile.y == index))
+        .filter((arr) => arr.length);
+      const columns = new Array(4)
+        .fill(null)
+        .map((_, index) => sortedTiles.filter((tile) => tile.x == index))
+        .filter((arr) => arr.length);
+
+      console.log("---------------------------------");
+      console.log("ROWS", rows);
+      console.log("COLUMNS", columns);
+
+      rows.forEach((row) => {
+        console.log("row is", row);
+        console.log("row playbale ? ", this.hasPlayableMove(row));
+        if (this.hasPlayableMove(row)) {
+          hasHorizontalMove = true;
+          return;
+        }
+        hasHorizontalMove = false;
+      });
+      if (!hasHorizontalMove) {
+        columns.forEach((column) => {
+          console.log("column", column);
+          console.log("column playbale ? ", this.hasPlayableMove(column));
+          if (this.hasPlayableMove(column)) {
+            console.log("column hasPlayableMove");
+            return;
+          }
+          hasVerticalMove = false;
+        });
+      }
+    }
+    console.log("HasHorizontalMove", hasHorizontalMove);
+    console.log("HasVerticalMove", hasVerticalMove);
+    if (!(hasHorizontalMove || hasVerticalMove)) {
+      this.gameOver = true;
+    }
+  }
+
+  // calculate if a row or line has a playable move
+  hasPlayableMove(tiles: Tile[]): boolean {
+    return tiles.some(
+      (tile, index, tiles) => index > 0 && tile.value == tiles[index - 1].value
+    );
   }
 }
 

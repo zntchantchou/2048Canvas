@@ -12,15 +12,14 @@ export default class Tile {
   value: number;
   nextValue: number;
   delete: Boolean;
-  sep;
+
   constructor(coordinates: Coordinates, value?: number) {
     this.x = coordinates.x;
     this.y = coordinates.y;
     this.value = !value || isNaN(value) ? (Math.random() < 0.7 ? 2 : 4) : value;
   }
 
-  updateValue() {
-    console.log("updateValue");
+  update() {
     this.value = this.nextValue ? this.nextValue : this.value;
   }
 }

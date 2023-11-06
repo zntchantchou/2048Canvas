@@ -8,6 +8,6 @@ let interval = setInterval(() => {
   if (!canvas || isCanvasReady) return;
   isCanvasReady = true;
   const game = new Game();
-  game.start();
   clearInterval(interval);
+  game.start();
 }, 300);
