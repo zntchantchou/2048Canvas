@@ -21,24 +21,24 @@ export default class GameState {
   reset() {
     this.tiles = [];
     const startTiles: Tile[] = [
-      this.getNewTile(),
-      this.getNewTile(),
-      // new Tile({ x: 0, y: 0 }, 2),
-      // new Tile({ x: 1, y: 0 }, 4),
-      // new Tile({ x: 2, y: 0 }, 2),
-      // new Tile({ x: 3, y: 0 }, 4),
-      // new Tile({ x: 0, y: 1 }, 4),
-      // new Tile({ x: 1, y: 1 }, 2),
-      // new Tile({ x: 2, y: 1 }, 4),
-      // new Tile({ x: 3, y: 1 }, 2),
-      // new Tile({ x: 0, y: 2 }, 2),
-      // new Tile({ x: 1, y: 2 }, 4),
-      // new Tile({ x: 2, y: 2 }, 2),
-      // new Tile({ x: 3, y: 2 }, 4),
-      // new Tile({ x: 0, y: 3 }, 4),
-      // new Tile({ x: 1, y: 3 }, 2),
-      // new Tile({ x: 2, y: 3 }, 4),
-      // new Tile({ x: 3, y: 3 }, 2),
+      // this.getNewTile(),
+      // this.getNewTile(),
+      new Tile({ x: 0, y: 0 }, 4),
+      new Tile({ x: 1, y: 0 }, 2),
+      new Tile({ x: 2, y: 0 }, 2),
+      new Tile({ x: 3, y: 0 }, 2),
+      new Tile({ x: 0, y: 1 }, 4),
+      new Tile({ x: 1, y: 1 }, 2),
+      new Tile({ x: 2, y: 1 }, 4),
+      new Tile({ x: 3, y: 1 }, 2),
+      new Tile({ x: 0, y: 2 }, 2),
+      new Tile({ x: 1, y: 2 }, 4),
+      new Tile({ x: 2, y: 2 }, 2),
+      new Tile({ x: 3, y: 2 }, 4),
+      new Tile({ x: 0, y: 3 }, 4),
+      new Tile({ x: 1, y: 3 }, 2),
+      new Tile({ x: 2, y: 3 }, 4),
+      new Tile({ x: 3, y: 3 }, 2),
     ];
     this.gameOver = false;
     startTiles.forEach((t) => this.addTile(t));
@@ -87,6 +87,8 @@ export default class GameState {
     let computedTiles: Tile[] = [];
     let isVerticalMove = this.VERTICAL_DIRECTIONS.includes(direction);
     let nextCoord = isVerticalMove ? "nextY" : "nextX";
+    console.log("---------------------------------");
+    console.log("SortedTiles", sortedtiles);
     for (let c = 0; c <= this.ROW_SIZE; c++) {
       // traverse by column if UP or DOWN
       // traverse by row if LEFT or RIGHT
@@ -118,6 +120,7 @@ export default class GameState {
 
             if (prevTile.value == tile.value) {
               tile.delete = true;
+              prevTile.nextValue = prevTile.value * 2;
             }
           }
           if (tile.delete) {
@@ -127,6 +130,8 @@ export default class GameState {
           // if the previous tile is deleted,
           // the next tile slides into the deleted tile's position
           if (prevTile.delete) {
+            console.log("PREVTILE DELETE", prevTile);
+            console.log("FOR TILE ", tile);
             if ([DIRECTIONS.DOWN, DIRECTIONS.RIGHT].includes(direction)) {
               tile[nextCoord] = prevTile[nextCoord] - 1;
             } else {
@@ -137,6 +142,7 @@ export default class GameState {
         computedTiles = [...computedTiles, tile];
       });
     }
+    console.log("computedTiles", computedTiles);
     return computedTiles;
   }
 

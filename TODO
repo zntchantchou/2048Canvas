@@ -10,21 +10,22 @@
 ☐ clean css
 
 ✔ implement scoring system @done(23-11-06 14:43)
-  ✔ score should not move @done(23-11-06 14:42)
-  ✔ set existing best score if exists @done(23-11-06 13:54)
-  ✔ best score must be saved to localstorage @done(23-11-06 13:54)
-  ✔ save score to localStorage @done(23-11-06 13:54)
-  ✔ reset score at game start @done(23-11-06 13:55)
-  
-  ☐ Win / loss
-  
-  ☐ Save game state at each move 
+✔ score should not move @done(23-11-06 14:42)
+✔ set existing best score if exists @done(23-11-06 13:54)
+✔ best score must be saved to localstorage @done(23-11-06 13:54)
+✔ save score to localStorage @done(23-11-06 13:54)
+✔ reset score at game start @done(23-11-06 13:55)
+
+☐ Win / loss
+
+☐ Save game state at each move 
 
   ☐ LOGIC
-    ☐ check if 16 (full grid)
-    ☐ YES: Sort right and then check for same value in contiguous tiles (same x if sorted horizontally, same y if vertically)
-
-  ☐ VISUAL 
-
-☐ refacto
-  ☐ createOverlay 
+  ☐ check if 16 (full grid)
+  ☐ YES: Sort right and then check for same value in contiguous tiles (same x if sorted horizontally, same y if vertically)
+  
+  
+  BUGS :
+    ✔ value bug on merge @done(23-11-08 16:16)
+    ☐ bug in calculateWinStatus
+      

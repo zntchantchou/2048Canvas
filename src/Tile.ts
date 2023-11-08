@@ -20,6 +20,7 @@ export default class Tile {
   }
 
   update() {
+    console.log("Tile.update()", this);
     this.value = this.nextValue ? this.nextValue : this.value;
   }
 }
