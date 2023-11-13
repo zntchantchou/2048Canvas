@@ -96,7 +96,7 @@ canvas {
     justify-content: center;
 }
 
-#overlay .text {
+#overlay #text {
     font-size: 3rem;
     font-weight: 900;
     margin-bottom: 20px;

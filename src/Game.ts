@@ -3,7 +3,6 @@ import GameState from "./State";
 import COLORS from "./colors";
 import Tile from "./Tile";
 
-// CONSTANTS
 export default class Game {
   // DOM selection ----------
   canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
@@ -13,8 +12,10 @@ export default class Game {
   bestScoreElt = document.getElementById("currentBestScore") as HTMLSpanElement;
   restartElt = document.getElementsByClassName("restart");
   overlayElt = document.getElementById("overlay") as HTMLDivElement;
-  // resumeElt = document.getElementById("resume") as HTMLDivElement;
-  // ------------------------
+  textElt = document.getElementById("text") as HTMLDivElement;
+  resumeBtn = document.getElementById("resume") as HTMLDivElement;
+
+  // CONSTANTS ----------
   font = "3em Arial";
   textAlign: CanvasTextAlign = "center";
   textFill = "#776E65";
@@ -30,6 +31,8 @@ export default class Game {
   lastMove: DIRECTIONS = DIRECTIONS.UP;
   isAnimationDone: boolean = false;
   currentAnimationNumber: number;
+  VICTORY_MSG = "YOU WIN !";
+  shouldDisplayWinOverlay = true;
 
   private drawSquare = (tile: Tile) => {
     if (!this.context) return;
@@ -181,9 +184,7 @@ export default class Game {
       this.gameState.handleAnimationEnd();
       this.setScore();
       this.draw();
-      if (this.gameState.gameOver) {
-        this.overlayElt.style.display = "flex";
-      }
+      this.handleGameEnd();
     }
   };
 
@@ -200,7 +201,7 @@ export default class Game {
 
   start() {
     this.setScore();
-    // this.handleResume();
+    this.handleResume();
     this.handleReload();
     this.handleMoveEvent();
     this.handleRestart();
@@ -208,10 +209,10 @@ export default class Game {
   }
 
   handleResume() {
-    // this.resumeElt.addEventListener("click", (e) => {
-    //   this.hideOverlay();
-    //   this.gameState.resume();
-    // });
+    this.resumeBtn.addEventListener("click", (e) => {
+      this.hideOverlay();
+      this.gameState.resume();
+    });
   }
 
   handleMoveEvent() {
@@ -257,6 +258,18 @@ export default class Game {
         this.draw();
       });
     });
+  }
+
+  handleGameEnd() {
+    if (this.gameState.gameOver) {
+      this.overlayElt.style.display = "flex";
+    }
+    if (this.gameState.hasWon && this.shouldDisplayWinOverlay) {
+      this.overlayElt.style.display = "flex";
+      this.textElt.textContent = this.VICTORY_MSG;
+      this.resumeBtn.style.display = "flex";
+      this.shouldDisplayWinOverlay = false;
+    }
   }
 
   setScore() {

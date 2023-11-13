@@ -3,7 +3,7 @@ import { DIRECTIONS } from "./enums";
 import { Coordinates } from "./interfaces";
 
 export default class GameState {
-  isPastWin: boolean = false;
+  hasWon: boolean = false;
   score: number = 0;
   bestScore: number = 0;
   tiles: Tile[] = [];
@@ -14,34 +14,14 @@ export default class GameState {
   HORIZONTAL_DIRECTIONS = [DIRECTIONS.LEFT, DIRECTIONS.RIGHT];
 
   constructor() {
-    console.log("reset");
     this.reset();
   }
 
   reset() {
     this.tiles = [];
-    const startTiles: Tile[] = [
-      // this.getNewTile(),
-      // this.getNewTile(),
-      new Tile({ x: 0, y: 0 }, 4),
-      new Tile({ x: 1, y: 0 }, 2),
-      new Tile({ x: 2, y: 0 }, 2),
-      new Tile({ x: 3, y: 0 }, 2),
-      new Tile({ x: 0, y: 1 }, 4),
-      new Tile({ x: 1, y: 1 }, 2),
-      new Tile({ x: 2, y: 1 }, 4),
-      new Tile({ x: 3, y: 1 }, 2),
-      new Tile({ x: 0, y: 2 }, 2),
-      new Tile({ x: 1, y: 2 }, 4),
-      new Tile({ x: 2, y: 2 }, 2),
-      new Tile({ x: 3, y: 2 }, 4),
-      new Tile({ x: 0, y: 3 }, 4),
-      new Tile({ x: 1, y: 3 }, 2),
-      new Tile({ x: 2, y: 3 }, 4),
-      new Tile({ x: 3, y: 3 }, 2),
-    ];
+    this.addTile();
+    this.addTile();
     this.gameOver = false;
-    startTiles.forEach((t) => this.addTile(t));
     window.localStorage.removeItem("currentScore");
     const bestScore = localStorage.getItem("bestScore");
     this.score = 0;
@@ -54,8 +34,8 @@ export default class GameState {
     return Math.round(Math.random() * 3);
   }
 
-  addTile(tile: Tile) {
-    this.tiles = [tile, ...this.tiles];
+  addTile(tile?: Tile) {
+    this.tiles = [tile ? tile : this.getNewTile(), ...this.tiles];
   }
 
   getNewTile() {
@@ -87,8 +67,6 @@ export default class GameState {
     let computedTiles: Tile[] = [];
     let isVerticalMove = this.VERTICAL_DIRECTIONS.includes(direction);
     let nextCoord = isVerticalMove ? "nextY" : "nextX";
-    console.log("---------------------------------");
-    console.log("SortedTiles", sortedtiles);
     for (let c = 0; c <= this.ROW_SIZE; c++) {
       // traverse by column if UP or DOWN
       // traverse by row if LEFT or RIGHT
@@ -130,8 +108,6 @@ export default class GameState {
           // if the previous tile is deleted,
           // the next tile slides into the deleted tile's position
           if (prevTile.delete) {
-            console.log("PREVTILE DELETE", prevTile);
-            console.log("FOR TILE ", tile);
             if ([DIRECTIONS.DOWN, DIRECTIONS.RIGHT].includes(direction)) {
               tile[nextCoord] = prevTile[nextCoord] - 1;
             } else {
@@ -142,7 +118,6 @@ export default class GameState {
         computedTiles = [...computedTiles, tile];
       });
     }
-    console.log("computedTiles", computedTiles);
     return computedTiles;
   }
 
@@ -177,7 +152,7 @@ export default class GameState {
 
   resume() {
     this.gameOver = false;
-    this.isPastWin = true;
+    this.hasWon = true;
   }
 
   get sortFns(): SORT_FNS {
@@ -234,18 +209,20 @@ export default class GameState {
   handleAnimationEnd() {
     this.deleteMergedTiles();
     this.spawnTile();
-    this.calculateWinStatus();
     this.updateValues();
+    this.calculateWinStatus();
   }
 
   calculateWinStatus() {
-    if (this.isPastWin && this.gameOver) {
-      console.log("this.isPastWin", this.isPastWin);
-      console.log("this.gameOver", this.gameOver);
-      this.gameOver = false;
+    this.hasWon = this.tiles.some((t) => t.value === 2048);
+    if (this.hasWon) {
+      this.hasWon = true;
+      if (this.gameOver) {
+        this.gameOver = false;
+      }
     }
-    let hasVerticalMove = true;
-    let hasHorizontalMove = true;
+    let hasVerticalMove = false;
+    let hasHorizontalMove = false;
 
     const sortedTiles = this.getSortedTiles(null);
     // check if 16 tiles
@@ -259,44 +236,36 @@ export default class GameState {
         .map((_, index) => sortedTiles.filter((tile) => tile.x == index))
         .filter((arr) => arr.length);
 
-      console.log("---------------------------------");
-      console.log("ROWS", rows);
-      console.log("COLUMNS", columns);
-
       rows.forEach((row) => {
-        console.log("row is", row);
-        console.log("row playbale ? ", this.hasPlayableMove(row));
+        if (hasHorizontalMove) return;
         if (this.hasPlayableMove(row)) {
           hasHorizontalMove = true;
           return;
         }
-        hasHorizontalMove = false;
       });
       if (!hasHorizontalMove) {
         columns.forEach((column) => {
-          console.log("column", column);
-          console.log("column playbale ? ", this.hasPlayableMove(column));
+          if (hasVerticalMove) {
+            return;
+          }
           if (this.hasPlayableMove(column)) {
-            console.log("column hasPlayableMove");
+            hasVerticalMove = true;
             return;
           }
           hasVerticalMove = false;
         });
       }
-    }
-    console.log("HasHorizontalMove", hasHorizontalMove);
-    console.log("HasVerticalMove", hasVerticalMove);
-    if (!(hasHorizontalMove || hasVerticalMove)) {
-      this.gameOver = true;
+      if (!(hasHorizontalMove || hasVerticalMove)) {
+        this.gameOver = true;
+      }
     }
   }
 
   // calculate if a row or line has a playable move
-  hasPlayableMove(tiles: Tile[]): boolean {
-    return tiles.some(
+  hasPlayableMove = (tiles: Tile[]): boolean =>
+    tiles.some(
       (tile, index, tiles) => index > 0 && tile.value == tiles[index - 1].value
     );
-  }
 }
 
 type TILE_SORT = (a: Tile, b: Tile) => 1 | 0 | -1;

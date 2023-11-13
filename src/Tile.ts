@@ -2,7 +2,6 @@ import { DIRECTIONS } from "./enums";
 import { Coordinates } from "./interfaces";
 
 export default class Tile {
-  //  all useful ?
   x: number;
   y: number;
   nextX: number;
@@ -20,7 +19,6 @@ export default class Tile {
   }
 
   update() {
-    console.log("Tile.update()", this);
     this.value = this.nextValue ? this.nextValue : this.value;
   }
 }
