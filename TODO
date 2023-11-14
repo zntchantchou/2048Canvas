@@ -18,14 +18,14 @@
 
 ☐ Win / loss
 
-☐ Save game state at each move 
-
-  ☐ LOGIC
-  ☐ check if 16 (full grid)
-  ☐ YES: Sort right and then check for same value in contiguous tiles (same x if sorted horizontally, same y if vertically)
-  
+✘ Save game state at each move @cancelled(23-11-13 19:19)
+✘ @cancelled(23-11-13 19:19)
+  ✘ LOGIC @cancelled(23-11-13 19:19)
+  ✘ check if 16 (full grid) @cancelled(23-11-13 19:19)
+  ✘ YES: Sort right and then check for same value in contiguous tiles (same x if sorted horizontally, same y if vertically) @cancelled(23-11-13 19:19)
+  ✘ @cancelled(23-11-13 19:19)
   
   BUGS :
     ✔ value bug on merge @done(23-11-08 16:16)
-    ☐ bug in calculateWinStatus
+    ✔ bug in calculateWinStatus @done(23-11-13 19:19)
       

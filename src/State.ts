@@ -228,10 +228,12 @@ export default class GameState {
     // check if 16 tiles
     if (sortedTiles.length === 16) {
       const rows = new Array(4)
+        // @ts-ignore
         .fill(null)
         .map((_, index) => sortedTiles.filter((tile) => tile.y == index))
         .filter((arr) => arr.length);
       const columns = new Array(4)
+        // @ts-ignore
         .fill(null)
         .map((_, index) => sortedTiles.filter((tile) => tile.x == index))
         .filter((arr) => arr.length);
