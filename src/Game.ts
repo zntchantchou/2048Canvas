@@ -254,12 +254,10 @@ export default class Game {
 
   handleSwipeEvent() {
     document.addEventListener("touchstart", (e) => {
-      e.preventDefault();
       this.touchStartX = e.changedTouches[0].screenX;
       this.touchStartY = e.changedTouches[0].screenY;
     });
     document.addEventListener("touchend", (e) => {
-      e.preventDefault();
       console.log("TOUCHEND");
       this.touchEndX = e.changedTouches[0].screenX;
       this.touchEndY = e.changedTouches[0].screenY;
