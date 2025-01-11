@@ -2,4 +2,4 @@
 
 docker compose up
 
-cp -r ./dist /data/2048
+cp -r ./dist /dist/2048
