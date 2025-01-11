@@ -1,7 +1,7 @@
 {
   "scripts": {
     "start": "npx parcel ./index.html",
-    "build": "npx parcel build  --public-url /2048/ --dist-dir 2048 ./index.html"
+    "build": "npx parcel build  --public-url /2048/ --dist-dir 2048 --no-cache ./index.html"
   },
   "devDependencies": {
     "assert": "^2.0.0",
