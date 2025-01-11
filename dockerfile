@@ -10,6 +10,4 @@ RUN npm install
 
 COPY . .
 
-RUN ["npm", "run", "build"]
-
-CMD ["tail", "-f", "/dev/null"]
+CMD ["npm", "run", "build"]
