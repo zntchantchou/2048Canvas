@@ -4,4 +4,4 @@ services:
       context: .
       dockerfile: dockerfile
     volumes:
-      - ~/projects/2048/dist:/app/2048
+      - ~/dev/2048canvas/dist:/app/2048
