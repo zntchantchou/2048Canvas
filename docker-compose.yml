@@ -1,7 +1,7 @@
 services:
   game-2048:
-    container_name: 2048
-    image: 2048
+    container_name: "2048"
+    image: "2048"
     build: 
       context: .
       dockerfile: dockerfile
