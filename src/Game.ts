@@ -33,6 +33,11 @@ export default class Game {
   currentAnimationNumber: number;
   VICTORY_MSG = "YOU WIN !";
   shouldDisplayWinOverlay = true;
+  touchStartX = 0;
+  touchEndX = 0;
+  touchStartY = 0;
+  touchEndY = 0;
+  swipeDistance = 30;
 
   private drawSquare = (tile: Tile) => {
     if (!this.context) return;
@@ -203,7 +208,8 @@ export default class Game {
     this.setScore();
     this.handleResume();
     this.handleReload();
-    this.handleMoveEvent();
+    this.handleArrowEvent();
+    this.handleSwipeEvent();
     this.handleRestart();
     this.draw();
   }
@@ -215,35 +221,70 @@ export default class Game {
     });
   }
 
-  handleMoveEvent() {
-    document.addEventListener("keydown", (event) => {
-      switch (event.code) {
-        case "ArrowUp":
-          this.gameState.move(DIRECTIONS.UP);
-          this.setMove(DIRECTIONS.UP);
-          break;
-        case "ArrowDown":
-          this.gameState.move(DIRECTIONS.DOWN);
-          this.setMove(DIRECTIONS.DOWN);
-          break;
-        case "ArrowLeft":
-          this.gameState.move(DIRECTIONS.LEFT);
-          this.setMove(DIRECTIONS.LEFT);
-          break;
-        case "ArrowRight":
-          this.gameState.move(DIRECTIONS.RIGHT);
-          this.setMove(DIRECTIONS.RIGHT);
-          break;
+  setDirection(direction: string) {
+    switch (direction) {
+      case "ArrowUp":
+        this.gameState.move(DIRECTIONS.UP);
+        this.setMove(DIRECTIONS.UP);
+        break;
+      case "ArrowDown":
+        this.gameState.move(DIRECTIONS.DOWN);
+        this.setMove(DIRECTIONS.DOWN);
+        break;
+      case "ArrowLeft":
+        this.gameState.move(DIRECTIONS.LEFT);
+        this.setMove(DIRECTIONS.LEFT);
+        break;
+      case "ArrowRight":
+        this.gameState.move(DIRECTIONS.RIGHT);
+        this.setMove(DIRECTIONS.RIGHT);
+        break;
+    }
+    if (
+      ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(direction)
+    ) {
+      this.isAnimationDone = false;
+      this.draw(true);
+    }
+  }
+
+  handleArrowEvent() {
+    document.addEventListener("keydown", (e) => this.setDirection(e.code));
+  }
+
+  handleSwipeEvent() {
+    document.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      this.touchStartX = e.changedTouches[0].screenX;
+      this.touchStartY = e.changedTouches[0].screenY;
+    });
+    document.addEventListener("touchend", (e) => {
+      e.preventDefault();
+      console.log("TOUCHEND");
+      this.touchEndX = e.changedTouches[0].screenX;
+      this.touchEndY = e.changedTouches[0].screenY;
+      if (this.touchEndX - this.touchStartX > this.swipeDistance) {
+        this.setDirection("ArrowRight");
+        return;
       }
-      if (
-        ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.code)
-      ) {
-        this.isAnimationDone = false;
-        this.draw(true);
+      if (this.touchEndX - this.touchStartX < -this.swipeDistance) {
+        this.setDirection("ArrowLeft");
+        return;
+      }
+      if (this.touchEndY - this.touchStartY > this.swipeDistance) {
+        this.setDirection("ArrowDown");
+        return;
+      }
+      if (this.touchEndY - this.touchStartY < -this.swipeDistance) {
+        this.setDirection("ArrowUp");
+        return;
       }
     });
   }
 
+  moveAfterSwipe() {
+    if (this.touchEndX < this.touchStartX) return;
+  }
   // avoid tiles when the page is reloaded
   handleReload() {
     window.onbeforeunload = (_) => {

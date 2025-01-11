@@ -1,0 +1,7 @@
+services:
+  game:
+    build: 
+      context: .
+      dockerfile: dockerfile
+    volumes:
+      - ~/dev/2048canvas/dist:/app/2048

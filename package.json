@@ -1,12 +1,14 @@
 {
   "scripts": {
-    "start": "npx parcel ./index.html"
+    "start": "npx parcel ./index.html",
+    "build": "npx parcel build  --public-url /2048/ --dist-dir 2048 ./index.html"
   },
   "devDependencies": {
     "assert": "^2.0.0",
     "console-browserify": "^1.2.0",
     "parcel": "^2.8.3",
     "process": "^0.11.10",
+    "svgo": "^3.3.2",
     "util": "^0.12.5"
   }
 }

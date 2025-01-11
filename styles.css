@@ -43,7 +43,8 @@ body {
 #score,
 #bestScore {
   font-size: 1.1em;
-  background-color: #bbada0;
+  /* background-color: #bbada0; */
+  background-color: #a0a0bb;
   padding: 5px 15px;
   flex-direction: column;
   justify-content: center;
